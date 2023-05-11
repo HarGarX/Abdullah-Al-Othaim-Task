@@ -1,4 +1,5 @@
 import 'package:abdullah_al_othaim_task/src/core/hive/hive_services.dart';
+import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/local/home_local_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remote/home_remote_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/repository/home_repository_impl.dart';
@@ -8,6 +9,7 @@ import 'package:abdullah_al_othaim_task/src/features/home/presentation/bloc/home
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'api_client/api_clinet.dart';
 
@@ -40,6 +42,7 @@ Future<void> setUpLocator() async {
   locator.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl(
         remoteDataSource: locator(),
         localDataSource: locator(),
+        networkInfo: locator(),
       ));
 
   ///
@@ -51,8 +54,13 @@ Future<void> setUpLocator() async {
     ),
   );
   locator.registerLazySingleton<HomeLocalDataSource>(
-    () => HomeLocalDataSourceImpl(),
+    () => HomeLocalDataSourceImpl(
+      flutterSecureStorage: locator(),
+    ),
   );
+
+  //TODO: add the network info impl.
+  locator.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(locator()));
 
   locator.registerLazySingleton<http.Client>(() => http.Client());
   locator.registerLazySingleton<ApiClient>(() => ApiClient(locator()));
@@ -62,4 +70,5 @@ Future<void> setUpLocator() async {
     () => const FlutterSecureStorage(),
   );
   locator.registerLazySingleton<HiveService>(() => HiveService());
+  locator.registerLazySingleton<InternetConnectionChecker>(() => InternetConnectionChecker());
 }
