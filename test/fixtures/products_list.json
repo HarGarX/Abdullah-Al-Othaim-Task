@@ -1,0 +1,86 @@
+[
+    {
+        "sku": 1,
+        "desc": "product 1",
+        "regularPrice": 5.99,
+        "salePrice": 3,
+        "imageUrl": "./assets/img/01.jpg"
+    },
+    {
+        "sku": 2,
+        "desc": "product 2",
+        "regularPrice": 15.78,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/02.jpg"
+    },
+    {
+        "sku": 3,
+        "desc": "product 3",
+        "regularPrice": 52.95,
+        "salePrice": 25.5,
+        "imageUrl": "./assets/img/03.jpg"
+    },
+    {
+        "sku": 4,
+        "desc": "product 4",
+        "regularPrice": 300,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/04.jpg"
+    },
+    {
+        "sku": 5,
+        "desc": "product 5",
+        "regularPrice": 80.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/05.jpg"
+    },
+    {
+        "sku": 6,
+        "desc": "product 6",
+        "regularPrice": 60.3,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/06.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 7",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/07.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 8",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/08.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 9",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/09.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 10",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/10.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 11",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/11.jpg"
+    },
+    {
+        "sku": 7,
+        "desc": "product 12",
+        "regularPrice": 500.5,
+        "salePrice": 0,
+        "imageUrl": "./assets/img/12.jpg"
+    }
+]

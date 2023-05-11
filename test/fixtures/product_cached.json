@@ -1,0 +1,7 @@
+{
+    "sku": 1,
+    "desc": "product 1",
+    "regularPrice": 5.99,
+    "salePrice": 3,
+    "imageUrl": "./assets/img/01.jpg"
+}
