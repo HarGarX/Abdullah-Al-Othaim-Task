@@ -9,8 +9,7 @@ class FetchProductsUseCase extends UseCase<List<ProductEntity>, NoParams> {
   FetchProductsUseCase({required HomeRepository homeRepository}) : _homeRepository = homeRepository;
 
   @override
-  Future<Either<Failure, List<ProductEntity>>> call(NoParams params) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Either<Failure, List<ProductEntity>>> call(NoParams params) async {
+    return await _homeRepository.fetchProducts();
   }
 }
