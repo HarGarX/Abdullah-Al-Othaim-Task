@@ -4,16 +4,19 @@
 
 import 'dart:convert';
 
+import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
+import 'package:equatable/equatable.dart';
+
 FetchProductsResponseModel fetchProductsResponseModelFromJson(String str) =>
     FetchProductsResponseModel.fromJson(json.decode(str));
 
 String fetchProductsResponseModelToJson(FetchProductsResponseModel data) => json.encode(data.toJson());
 
-class FetchProductsResponseModel {
+class FetchProductsResponseModel extends Equatable {
   final String? categoryDesc;
   final int? total;
   final String? imagePlaceholder;
-  final List<Datum>? data;
+  final List<Product>? data;
 
   FetchProductsResponseModel({
     this.categoryDesc,
@@ -26,7 +29,7 @@ class FetchProductsResponseModel {
     String? categoryDesc,
     int? total,
     String? imagePlaceholder,
-    List<Datum>? data,
+    List<Product>? data,
   }) =>
       FetchProductsResponseModel(
         categoryDesc: categoryDesc ?? this.categoryDesc,
@@ -39,7 +42,7 @@ class FetchProductsResponseModel {
         categoryDesc: json["categoryDesc"],
         total: json["total"],
         imagePlaceholder: json["imagePlaceholder"],
-        data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+        data: json["data"] == null ? [] : List<Product>.from(json["data"]!.map((x) => Product.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,31 +51,41 @@ class FetchProductsResponseModel {
         "imagePlaceholder": imagePlaceholder,
         "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [categoryDesc, total, imagePlaceholder, data];
 }
 
-class Datum {
+class Product extends ProductEntity {
   final int? sku;
   final String? desc;
   final double? regularPrice;
-  final double? salePrice;
+  final num? salePrice;
   final String? imageUrl;
 
-  Datum({
+  Product({
     this.sku,
     this.desc,
     this.regularPrice,
     this.salePrice,
     this.imageUrl,
-  });
+  }) : super(
+          sku: sku,
+          desc: desc,
+          regularPrice: regularPrice,
+          salePrice: salePrice,
+          imageUrl: imageUrl,
+        );
 
-  Datum copyWith({
+  Product copyWith({
     int? sku,
     String? desc,
     double? regularPrice,
-    double? salePrice,
+    num? salePrice,
     String? imageUrl,
   }) =>
-      Datum(
+      Product(
         sku: sku ?? this.sku,
         desc: desc ?? this.desc,
         regularPrice: regularPrice ?? this.regularPrice,
@@ -80,7 +93,7 @@ class Datum {
         imageUrl: imageUrl ?? this.imageUrl,
       );
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
         sku: json["sku"],
         desc: json["desc"],
         regularPrice: json["regularPrice"]?.toDouble(),

@@ -18,6 +18,8 @@ class ApiClient {
 
   ApiClient(this.client);
 
+  String readData(String name) => File('assets/data/$name').readAsStringSync();
+
   /// Return the header without the stored JWT Token.
   Future<Map<String, String>> _getHeaders() async {
     DateTime now = DateTime.now();
