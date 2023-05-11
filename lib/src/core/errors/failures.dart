@@ -7,48 +7,31 @@ abstract class Failure extends Equatable {
 
   @override
   List<Object> get props => [errorMessage];
-
-  @override
-  bool get stringify => true;
 }
 
 class NoInternetFailure extends Failure {
   const NoInternetFailure({required super.errorMessage});
+
   @override
   List<Object> get props => [errorMessage];
 }
 
 class ServerFailure extends Failure {
-  final String errorMessage;
-  const ServerFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
+  const ServerFailure({required super.errorMessage});
 }
 
 class CacheFailure extends Failure {
-  final String errorMessage;
-  const CacheFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
+  const CacheFailure({required super.errorMessage});
 }
 
 class TimeoutFailure extends Failure {
-  final String errorMessage;
-  const TimeoutFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
-
-  @override
-  List<Object> get props => [errorMessage];
+  const TimeoutFailure({required super.errorMessage});
 }
 
 class ReadingDataFailure extends Failure {
-  final String errorMessage;
-  const ReadingDataFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
-
-  @override
-  List<Object> get props => [errorMessage];
+  const ReadingDataFailure({required super.errorMessage});
 }
 
 class UnknownFailure extends Failure {
-  final String errorMessage;
-
-  const UnknownFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
-
-  @override
-  List<Object> get props => [errorMessage];
+  const UnknownFailure({required super.errorMessage});
 }
