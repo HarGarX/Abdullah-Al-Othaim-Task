@@ -4,15 +4,20 @@
 
 import 'dart:convert';
 
-ProductEntity productEntityFromJson(String str) => ProductEntity.fromJson(json.decode(str));
+import 'package:equatable/equatable.dart';
 
+List<ProductEntity> productsEntityFromJson(String str) =>
+    List<ProductEntity>.from(json.decode(str).map((x) => ProductEntity.fromJson(x)));
+String productsEntityToJson(List<ProductEntity> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+ProductEntity productEntityFromJson(String str) => ProductEntity.fromJson(json.decode(str));
 String productEntityToJson(ProductEntity data) => json.encode(data.toJson());
 
-class ProductEntity {
+class ProductEntity extends Equatable {
   final int? sku;
   final String? desc;
   final double? regularPrice;
-  final int? salePrice;
+  final num? salePrice;
   final String? imageUrl;
 
   ProductEntity({
@@ -27,7 +32,7 @@ class ProductEntity {
     int? sku,
     String? desc,
     double? regularPrice,
-    int? salePrice,
+    num? salePrice,
     String? imageUrl,
   }) =>
       ProductEntity(
@@ -53,4 +58,8 @@ class ProductEntity {
         "salePrice": salePrice,
         "imageUrl": imageUrl,
       };
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [sku, desc, regularPrice, salePrice, imageUrl];
 }
