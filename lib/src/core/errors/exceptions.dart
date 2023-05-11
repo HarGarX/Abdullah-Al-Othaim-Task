@@ -22,34 +22,16 @@ class NoInternetException extends AppException {
   List<Object?> get props => [errorMessage];
 }
 
-/// Exception thrown when there is an error thrown from the server
 class ServerException extends AppException {
   final String errorMessage;
   const ServerException({required this.errorMessage}) : super(errorMessage: errorMessage);
   @override
   List<Object?> get props => [errorMessage];
-
-  @override
-  String toString() {
-    return errorMessage;
-  }
 }
 
-class ErrorReadingDataException extends AppException {
+class CacheException extends AppException {
   final String errorMessage;
-  const ErrorReadingDataException({required this.errorMessage}) : super(errorMessage: errorMessage);
-  @override
-  List<Object?> get props => [errorMessage];
-
-  @override
-  String toString() {
-    return errorMessage;
-  }
-}
-
-class UnknownException extends AppException {
-  final String errorMessage;
-  const UnknownException({required this.errorMessage}) : super(errorMessage: errorMessage);
+  const CacheException({required this.errorMessage}) : super(errorMessage: errorMessage);
   @override
   List<Object?> get props => [errorMessage];
 }

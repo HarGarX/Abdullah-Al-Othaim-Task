@@ -20,11 +20,12 @@ class NoInternetFailure extends Failure {
 
 class ServerFailure extends Failure {
   final String errorMessage;
-
   const ServerFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
+}
 
-  @override
-  List<Object> get props => [errorMessage];
+class CacheFailure extends Failure {
+  final String errorMessage;
+  const CacheFailure({required this.errorMessage}) : super(errorMessage: errorMessage);
 }
 
 class TimeoutFailure extends Failure {
