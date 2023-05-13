@@ -5,6 +5,7 @@ import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remot
 import 'package:abdullah_al_othaim_task/src/features/home/data/repository/home_repository_impl.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/repository/home_repository.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/use_cases/fetch_products_use_case.dart';
+import 'package:abdullah_al_othaim_task/src/features/home/domain/use_cases/update_data_in_local_use_case.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -24,7 +25,10 @@ Future<void> setUpLocator() async {
   * Home Bloc
   */
   locator.registerFactory<HomeBloc>(
-    () => HomeBloc(fetchProductsUseCase: locator()),
+    () => HomeBloc(
+      fetchProductsUseCase: locator(),
+      updateDataInLocalUseCase: locator(),
+    ),
   );
 
   ///
@@ -32,6 +36,11 @@ Future<void> setUpLocator() async {
   ///
   locator.registerFactory<FetchProductsUseCase>(
     () => FetchProductsUseCase(
+      homeRepository: locator(),
+    ),
+  );
+  locator.registerFactory<UpdateDataInLocalUseCase>(
+    () => UpdateDataInLocalUseCase(
       homeRepository: locator(),
     ),
   );

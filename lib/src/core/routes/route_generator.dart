@@ -1,6 +1,7 @@
 import 'package:abdullah_al_othaim_task/src/core/routes/route_consts.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class RouteGenerator {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -8,7 +9,7 @@ class RouteGenerator {
 
     switch (settings.name) {
       case RouteConsts.homeRoute:
-        return MaterialPageRoute(builder: (context) => const HomeScreen());
+        return PageTransition(child: const HomeScreen(), type: PageTransitionType.fade);
 
       default:
         return errorRoute();
