@@ -31,38 +31,34 @@ dependencies:
   flutter:
     sdk: flutter
 
+
+  #UI [Pkgs]
   cupertino_icons: ^1.0.2
-  intl: ^0.18.1
   flutter_native_splash: ^2.2.16
   responsive_sizer: ^3.1.1
-  google_fonts: ^3.0.1
   carousel_slider: ^4.2.1
-  flutter_svg: ^1.1.5
   animated_snack_bar: ^0.3.0
   responsive_framework: ^0.2.0
-  flutter_slidable: ^2.0.0
   skeletons: ^0.0.3
-  #localstorage [Pkgs]
-  hive: ^2.2.3
-  #Route Page Transation
+  #Route Page Transation [Pkgs]
   page_transition: ^2.0.9
-  #Permission Handler
-  permission_handler: ^10.2.0
   #Storage [Pkgs]
   shared_preferences: ^2.0.15
   flutter_secure_storage: ^6.0.0
+  #HTTP [pkgs]
+  http: ^0.13.6
   #StateManagement [Pkgs]
   flutter_bloc: ^8.1.1
   #DataCompare [Pkgs]
   equatable: ^2.0.5
-  #collection: ^1.17.1
   #DepInjection [Pkgs]
   get_it: ^7.2.0
   #FunctionalPrograming [Pkgs]
   dartz: ^0.10.1
-  #Auth [Pkgs]
-  jwt_decoder: ^2.0.1
+  #Network Check [Pkgs]
   internet_connection_checker: ^1.0.0+1
+  #Utills [pkg]
+  intl: ^0.18.1
 
 
 dev_dependencies:
