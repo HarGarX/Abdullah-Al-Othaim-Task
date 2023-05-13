@@ -20,11 +20,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     try {
       final rawData = await _apiClient.readData('assets/data.json');
       final data = FetchProductsResponseModel.fromJson(jsonDecode(rawData));
-
-      // if (data.data!.isNotEmpty) {
       return data;
-      // }
-      // throw const ServerException(errorMessage: 'server error');
     } on PathNotFoundException {
       rethrow;
     } on TimeoutException {

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
@@ -26,13 +26,13 @@ class ApiClient {
     try {
       final NetworkInfo networkInfo = locator<NetworkInfo>();
       await networkInfo.isConnected;
-      print('--- Parse json from: $name');
+      dev.log('--- Parse json from: $name');
       final data = await rootBundle.loadString(name);
       final jsonResult = jsonDecode(data);
-      print('--- json Result: $jsonResult');
+      dev.log('--- json Result: $jsonResult');
       return data;
     } catch (e, stk) {
-      print(e);
+      dev.log(e.toString());
       rethrow;
     }
   }
@@ -56,8 +56,8 @@ class ApiClient {
   Future<Map<String, String>> _getHeadersWithAuth({required String tokenTypeStorageKey}) async {
     final secureStorage = locator<FlutterSecureStorage>();
     String? token = await secureStorage.read(key: tokenTypeStorageKey);
-    log(tokenTypeStorageKey, name: "this is token name");
-    log(token!, name: "this is token value");
+    dev.log(tokenTypeStorageKey, name: "this is token name");
+    dev.log(token!, name: "this is token value");
     Map<String, String> headers = await _getHeaders();
     headers["Authorization"] = 'Bearer $token';
     return headers;
@@ -88,8 +88,8 @@ class ApiClient {
 
         Map<String, dynamic> responseBody = jsonDecode(body);
         if (responseBody['code'] != null || responseBody['message'] != null) {
-          log(responseBody['code'], name: "GET REQUEST HAD ERROR WITH CODE => POST => API CLIENT");
-          log(responseBody['message'], name: "GET REQUEST HAD ERROR WITH CODE => POST => API CLIENT");
+          dev.log(responseBody['code'], name: "GET REQUEST HAD ERROR WITH CODE => POST => API CLIENT");
+          dev.log(responseBody['message'], name: "GET REQUEST HAD ERROR WITH CODE => POST => API CLIENT");
           throw ServerException(errorMessage: responseBody['message']);
         }
 
@@ -120,8 +120,8 @@ class ApiClient {
         headers = await _getHeaders();
       }
 
-      log("${Uri.parse('$apiUrl$endpoint')}", name: "POST REQUEST URI  => POST() => API CLIENT");
-      log("${headers}", name: 'APICLINET => POST METHOD => HEADERS ');
+      dev.log("${Uri.parse('$apiUrl$endpoint')}", name: "POST REQUEST URI  => POST() => API CLIENT");
+      dev.log("$headers", name: 'APICLINET => POST METHOD => HEADERS ');
 
       final response = await client
           .post(
@@ -138,12 +138,12 @@ class ApiClient {
           if (responseBody == null) throw const ServerException(errorMessage: ErrorConst.UNKNOWN_ERROR);
           throw ServerException(errorMessage: responseBody['message']);
         }
-        log("${response.statusCode}", name: "POST REQUEST  STATUS CODE => Post() => API CLIENT");
+        dev.log("${response.statusCode}", name: "POST REQUEST  STATUS CODE => Post() => API CLIENT");
         // log("${response.body}" , name: "SUCCESS POST RESPONSE BODY => Post() => API CLIENT");
         Map<String, dynamic> responseBody = jsonDecode(jsonEncode(response.body));
         if (responseBody['code'] != null || responseBody['message'] != null) {
-          log(responseBody['code'], name: "POST REQUEST HAD ERROR WITH CODE => POST => APICLIENT");
-          log(responseBody['message'], name: "POST REQUEST HAD ERROR WITH CODE => POST => APICLIENT");
+          dev.log(responseBody['code'], name: "POST REQUEST HAD ERROR WITH CODE => POST => APICLIENT");
+          dev.log(responseBody['message'], name: "POST REQUEST HAD ERROR WITH CODE => POST => APICLIENT");
           throw ServerException(errorMessage: responseBody['message']);
         }
 
@@ -169,7 +169,7 @@ class ApiClient {
         headers = await _getHeaders();
       }
 
-      log("${Uri.parse('$endpoint')}", name: "DELETE REQUEST URL  => DELETE() => API CLIENT");
+      dev.log("${Uri.parse(endpoint)}", name: "DELETE REQUEST URL  => DELETE() => API CLIENT");
 
       final response = await client
           .delete(
@@ -180,14 +180,14 @@ class ApiClient {
       if (response.body.isNotEmpty) {
         if (response.statusCode != 200) {
           final responseBody = (response.body);
-          if (responseBody == null) throw const ServerException(errorMessage: ErrorConst.UNKNOWN_ERROR);
+          if (responseBody.isEmpty) throw const ServerException(errorMessage: ErrorConst.UNKNOWN_ERROR);
           throw ServerException(errorMessage: jsonDecode(responseBody)['message']);
         }
-        log("${response.statusCode}", name: "DELETE REQUEST  STATUS CODE => Post() => API CLIENT");
+        dev.log("${response.statusCode}", name: "DELETE REQUEST  STATUS CODE => Post() => API CLIENT");
         Map<String, dynamic> responseBody = jsonDecode(response.body);
         if (responseBody['code'] != null || responseBody['message'] != null) {
-          log(responseBody['code'], name: "DELETE REQUEST HAD ERROR WITH CODE => DELETE => APICLIENT");
-          log(responseBody['message'], name: "DELETE REQUEST HAD ERROR WITH CODE => DELETE => APICLIENT");
+          dev.log(responseBody['code'], name: "DELETE REQUEST HAD ERROR WITH CODE => DELETE => APICLIENT");
+          dev.log(responseBody['message'], name: "DELETE REQUEST HAD ERROR WITH CODE => DELETE => APICLIENT");
           throw ServerException(errorMessage: responseBody['message']);
         }
 

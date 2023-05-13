@@ -20,7 +20,6 @@ class HomeRepositoryImpl implements HomeRepository {
   final HomeRemoteDataSource _remoteDataSource;
   final HomeLocalDataSource _localDataSource;
   final NetworkInfo _networkInfo;
-  DateTime timerToFetchDataFromServer = DateTime.now();
 
   HomeRepositoryImpl({
     required HomeRemoteDataSource remoteDataSource,
@@ -36,13 +35,10 @@ class HomeRepositoryImpl implements HomeRepository {
     final secureStorage = locator<FlutterSecureStorage>();
     final String? notFirstFetch = await secureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH);
     final bool isItNotFirstFetch = notFirstFetch == 'true' ? true : false;
-    if (isConnected == true && isItNotFirstFetch == false
-        // DateTime.now().difference(timerToFetchDataFromServer) >= Duration(seconds: 45)
-        ) {
-      print("its connected");
+    if (isConnected == true && isItNotFirstFetch == false) {
+      dev.log("its connected");
       try {
         final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
-        timerToFetchDataFromServer = DateTime.now();
         await _localDataSource.cacheData(data: rawData);
         await secureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true');
         final data = rawData.data;
@@ -58,7 +54,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return const Left(NoInternetFailure(errorMessage: 'No Internet Connectivity'));
       }
     } else {
-      print("its not connected");
+      dev.log("its not connected");
 
       try {
         final rawData = await _localDataSource.fetchProducts();
@@ -79,7 +75,6 @@ class HomeRepositoryImpl implements HomeRepository {
       dev.log("its connected from update data");
       try {
         final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
-        timerToFetchDataFromServer = DateTime.now();
         await _localDataSource.cacheData(data: rawData);
         final data = rawData.data;
         final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
@@ -102,5 +97,5 @@ class HomeRepositoryImpl implements HomeRepository {
 
 /*
 Expected: Right<dynamic, List<ProductEntity>>:<Right([ProductEntity(1, product 1, 5.99, 3.0, ./assets/img/01.jpg), ProductEntity(2, product 2, 15.78, 0.0, ./assets/img/02.jpg), ProductEntity(3, product 3, 52.95, 25.5, ./assets/img/03.jpg), ProductEntity(4, product 4, 300.0, 0.0, ./assets/img/04.jpg), ProductEntity(5, product 5, 80.5, 0.0, ./assets/img/05.jpg), ProductEntity(6, product 6, 60.3, 0.0, ./assets/img/06.jpg), ProductEntity(7, product 7, 500.5, 0.0, ./assets/img/07.jpg), ProductEntity(7, product 8, 500.5, 0.0, ./assets/img/08.jpg), ProductEntity(7, product 9, 500.5, 0.0, ./assets/img/09.jpg), ProductEntity(7, product 10, 500.5, 0.0, ./assets/img/10.jpg), ProductEntity(7, product 11, 500.5, 0.0, ./assets/img/11.jpg), ProductEntity(7, product 12, 500.5, 0.0, ./assets/img/12.jpg)])>
- Actual: Right<Failure, List<ProductEntity>>:<Right([ProductEntity(1, product 1, 5.99, 3.0, ./assets/img/01.jpg), ProductEntity(2, product 2, 15.78, 0.0, ./assets/img/02.jpg), ProductEntity(3, product 3, 52.95, 25.5, ./assets/img/03.jpg), ProductEntity(4, product 4, 300.0, 0.0, ./assets/img/04.jpg), ProductEntity(5, product 5, 80.5, 0.0, ./assets/img/05.jpg), ProductEntity(6, product 6, 60.3, 0.0, ./assets/img/06.jpg), ProductEntity(7, product 7, 500.5, 0.0, ./assets/img/07.jpg), ProductEntity(7, product 8, 500.5, 0.0, ./assets/img/08.jpg), ProductEntity(7, product 9, 500.5, 0.0, ./assets/img/09.jpg), ProductEntity(7, product 10, 500.5, 0.0, ./assets/img/10.jpg), ProductEntity(7, product 11, 500.5, 0.0, ./assets/img/11.jpg), ProductEntity(7, product 12, 500.5, 0.0, ./assets/img/12.jpg)])>
+Actual: Right<Failure, List<ProductEntity>>:<Right([ProductEntity(1, product 1, 5.99, 3.0, ./assets/img/01.jpg), ProductEntity(2, product 2, 15.78, 0.0, ./assets/img/02.jpg), ProductEntity(3, product 3, 52.95, 25.5, ./assets/img/03.jpg), ProductEntity(4, product 4, 300.0, 0.0, ./assets/img/04.jpg), ProductEntity(5, product 5, 80.5, 0.0, ./assets/img/05.jpg), ProductEntity(6, product 6, 60.3, 0.0, ./assets/img/06.jpg), ProductEntity(7, product 7, 500.5, 0.0, ./assets/img/07.jpg), ProductEntity(7, product 8, 500.5, 0.0, ./assets/img/08.jpg), ProductEntity(7, product 9, 500.5, 0.0, ./assets/img/09.jpg), ProductEntity(7, product 10, 500.5, 0.0, ./assets/img/10.jpg), ProductEntity(7, product 11, 500.5, 0.0, ./assets/img/11.jpg), ProductEntity(7, product 12, 500.5, 0.0, ./assets/img/12.jpg)])>
  */
