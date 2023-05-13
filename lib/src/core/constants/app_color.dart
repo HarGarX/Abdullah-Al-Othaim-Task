@@ -15,4 +15,6 @@ class AppColor {
   static const Color mainAppColorGreenShade = Color(0xff2F986C);
   static const Color mainAppColorWhite = Color(0xffFFFFFF);
   static const Color mainAppColorRed = Color(0xffED1B24);
+
+  static const Color secondaryAppColorYellow = Color(0xffE6C753);
 }
