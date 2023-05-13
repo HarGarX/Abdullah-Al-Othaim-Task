@@ -1,5 +1,7 @@
 import 'package:abdullah_al_othaim_task/src/core/routes/route_consts.dart';
+import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/presentation/screens/home_screen.dart';
+import 'package:abdullah_al_othaim_task/src/features/home/presentation/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -10,7 +12,13 @@ class RouteGenerator {
     switch (settings.name) {
       case RouteConsts.homeRoute:
         return PageTransition(child: const HomeScreen(), type: PageTransitionType.fade);
-
+      case RouteConsts.productRoute:
+        final ProductEntity productEntity = settings.arguments as ProductEntity;
+        return PageTransition(
+          child: ProductsDetailScreen(productEntity: productEntity),
+          type: PageTransitionType.fade,
+          duration: const Duration(milliseconds: 500),
+        );
       default:
         return errorRoute();
     }
@@ -34,9 +42,7 @@ class RouteGenerator {
                           FocusScope.of(context).requestFocus(FocusNode());
                           Navigator.pop(context);
                         },
-                        child: Container(
-                          child: Icon(Icons.arrow_back),
-                        ),
+                        child: const Icon(Icons.arrow_back),
                       ),
                     ),
                     const Spacer(),

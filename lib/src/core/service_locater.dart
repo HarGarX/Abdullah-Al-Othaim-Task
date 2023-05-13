@@ -1,4 +1,3 @@
-import 'package:abdullah_al_othaim_task/src/core/hive/hive_services.dart';
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/local/home_local_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remote/home_remote_data_source.dart';
@@ -78,6 +77,5 @@ Future<void> setUpLocator() async {
   locator.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(),
   );
-  locator.registerLazySingleton<HiveService>(() => HiveService());
   locator.registerLazySingleton<InternetConnectionChecker>(() => InternetConnectionChecker());
 }
