@@ -8,6 +8,7 @@ import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remot
 import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/repository/home_repository_impl.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -21,7 +22,14 @@ void main() {
   late final MockHomeRemoteDataSource mockRemoteDataSource;
   late final MockHomeLocalDataSource mockLocalDataSource;
   late final MockNetworkInfo mockNetworkInfo;
-
+  mockRemoteDataSource = MockHomeRemoteDataSource();
+  mockLocalDataSource = MockHomeLocalDataSource();
+  mockNetworkInfo = MockNetworkInfo();
+  repository = HomeRepositoryImpl(
+    remoteDataSource: mockRemoteDataSource,
+    localDataSource: mockLocalDataSource,
+    networkInfo: mockNetworkInfo,
+  );
   // mockRemoteDataSource = MockHomeRemoteDataSource();
   // mockLocalDataSource = MockHomeLocalDataSource();
   // mockNetworkInfo = MockNetworkInfo();
@@ -30,16 +38,7 @@ void main() {
   //     // localDataSource: mockLocalDataSource,
   //     // networkInfo: mockNetworkInfo,
   //     );
-  setUpAll(() {
-    mockRemoteDataSource = MockHomeRemoteDataSource();
-    mockLocalDataSource = MockHomeLocalDataSource();
-    mockNetworkInfo = MockNetworkInfo();
-    repository = HomeRepositoryImpl(
-      remoteDataSource: mockRemoteDataSource,
-      localDataSource: mockLocalDataSource,
-      networkInfo: mockNetworkInfo,
-    );
-  });
+  setUpAll(() {});
   group('fetchProducts', () {
     // DATA FOR THE MOCKS AND ASSERTIONS
     // We'll use these three variables throughout all the tests
@@ -59,9 +58,12 @@ void main() {
 
   group('device is online', () {
     // This setUp applies only to the 'device is online' group
-    setUp(() {
+    setUpAll(() {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
     });
+    // tearDownAll(() {
+    //   resetMockitoState();
+    // });
 
     test(
       'should return remote data when the call to remote data source is successful',
@@ -80,6 +82,8 @@ void main() {
         //assert
         verify(mockRemoteDataSource.fetchProducts());
         expect(result, equals(tProductsList));
+        reset(mockRemoteDataSource);
+        reset(mockLocalDataSource);
       },
     );
 
@@ -100,6 +104,8 @@ void main() {
         // assert
         verify(mockRemoteDataSource.fetchProducts());
         verify(mockLocalDataSource.cacheData(data: tFetchProductsResponseModel));
+        reset(mockRemoteDataSource);
+        reset(mockLocalDataSource);
       },
     );
 
@@ -107,8 +113,9 @@ void main() {
       'should return server failure when the call to remote data source is unsuccessful',
       () async {
         // arrange
-        when(mockRemoteDataSource.fetchProducts()).thenThrow(const ServerException(errorMessage: 'error'));
+        when(mockRemoteDataSource.fetchProducts()).thenThrow(const Left(ServerFailure(errorMessage: 'server error')));
         // act
+        print("its shold show");
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
@@ -116,7 +123,9 @@ void main() {
         // assert
         verify(mockRemoteDataSource.fetchProducts());
         verifyZeroInteractions(mockLocalDataSource);
-        expect(result, equals(const ServerException(errorMessage: 'error')));
+        expect(result, equals(const ServerFailure(errorMessage: 'server error')));
+        reset(mockRemoteDataSource);
+        reset(mockLocalDataSource);
       },
     );
   });
@@ -144,6 +153,8 @@ void main() {
         verifyZeroInteractions(mockRemoteDataSource);
         verify(mockLocalDataSource.fetchProducts());
         expect(result, equals(tProductsList));
+        reset(mockRemoteDataSource);
+        reset(mockLocalDataSource);
       },
     );
 
@@ -161,6 +172,8 @@ void main() {
         verifyZeroInteractions(mockRemoteDataSource);
         verify(mockLocalDataSource.fetchProducts());
         expect(result, equals(const CacheFailure(errorMessage: 'no data in cache')));
+        reset(mockRemoteDataSource);
+        reset(mockLocalDataSource);
       },
     );
   });

@@ -5,6 +5,7 @@ import 'package:abdullah_al_othaim_task/src/core/errors/failures.dart';
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/local/home_local_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remote/home_remote_data_source.dart';
+import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/repository/home_repository.dart';
 import 'package:dartz/dartz.dart';
@@ -24,15 +25,16 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Either<Failure, List<ProductEntity>>> fetchProducts() async {
-    if (await _networkInfo.isConnected) {
+    final bool isConnected = await _networkInfo.isConnected;
+    if (isConnected == true) {
       try {
-        final rawData = await _remoteDataSource.fetchProducts();
-        _localDataSource.cacheData(data: rawData);
+        final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
+        await _localDataSource.cacheData(data: rawData);
         final data = rawData.data;
         final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
         return Right(productsList);
       } catch (e, stk) {
-        return Left(ServerFailure(errorMessage: stk.toString()));
+        return Left(ServerFailure(errorMessage: 'server error'));
         throw UnimplementedError();
       }
     } else {
