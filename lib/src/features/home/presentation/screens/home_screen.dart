@@ -50,12 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
           fontSize: 18.sp,
         ),
       ),
-
       backgroundColor: AppColor.mainAppColorGreenShade.withOpacity(0.7),
       padding: const EdgeInsets.all(15.0),
       margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
       behavior: SnackBarBehavior.floating,
-      // width: 20.w,
+      width: 20.w,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       duration: const Duration(seconds: 1),
     ));
@@ -87,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: Device.orientation == Orientation.portrait ? 20.w : 20.h,
                   fit: BoxFit.cover,
                 ),
-                // Your widgets here
               ],
             ),
           ),
@@ -109,12 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 18.sp,
                     ),
                   ),
-
                   backgroundColor: AppColor.mainAppColorRed,
                   padding: const EdgeInsets.all(15.0),
                   margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
                   behavior: SnackBarBehavior.floating,
-                  // width: 20.w,
+                  width: 20.w,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                   duration: const Duration(seconds: 4),
                 ));
@@ -133,12 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 18.sp,
                         ),
                       ),
-
                       backgroundColor: AppColor.mainAppColorLimeGreen,
                       padding: const EdgeInsets.all(15.0),
                       margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
                       behavior: SnackBarBehavior.floating,
-                      // width: 20.w,
+                      width: 20.w,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                       duration: const Duration(seconds: 4),
                     ));
@@ -218,13 +214,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               const SizedBox(
                                                 height: 5.0,
                                               ),
-                                              Column(
+                                              Row(
                                                 mainAxisAlignment: i.salePrice! > 0.0
-                                                    ? MainAxisAlignment.spaceEvenly
+                                                    ? MainAxisAlignment.center
                                                     : MainAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    i.regularPrice!.toStringAsFixed(2),
+                                                    i.regularPrice!.toStringAsFixed(2) + " ",
                                                     style: TextStyle(
                                                       color:
                                                           i.salePrice! > 0.0 ? AppColor.mainAppColorRed : Colors.black,
@@ -232,37 +228,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       fontWeight: FontWeight.w500,
                                                       decoration:
                                                           i.salePrice! > 0.0 ? TextDecoration.lineThrough : null,
-                                                      fontSize: 22.sp,
+                                                      fontSize: i.salePrice! > 0.0 ? 14.sp : 22.sp,
                                                     ),
                                                   ),
-                                                  i.salePrice! > 0.0
-                                                      ? Text(
-                                                          i.salePrice!.toStringAsFixed(2),
-                                                          style: TextStyle(
-                                                            color: AppColor.mainAppColorLimeGreen,
-                                                            fontFamily: 'Metropolis',
-                                                            fontWeight: FontWeight.w600,
-                                                            fontSize: 22.sp,
-                                                          ),
-                                                        )
-                                                      : Text(
-                                                          "",
-                                                          style: TextStyle(
-                                                            color: AppColor.mainAppColorLimeGreen,
-                                                            fontFamily: 'Metropolis',
-                                                            fontWeight: FontWeight.w600,
-                                                            fontSize: 22.sp,
-                                                          ),
-                                                        ),
+                                                  if (i.salePrice! > 0.0) ...[
+                                                    Text(
+                                                      i.salePrice!.toStringAsFixed(2),
+                                                      style: TextStyle(
+                                                        color: AppColor.mainAppColorLimeGreen,
+                                                        fontFamily: 'Metropolis',
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 22.sp,
+                                                      ),
+                                                    )
+                                                  ] else
+                                                    ...[],
                                                   Text(
                                                     "SAR",
                                                     style: TextStyle(
-                                                      color: AppColor.mainAppColorRed,
+                                                      color: AppColor.mainAppColorLimeGreen,
                                                       fontFamily: 'Metropolis',
-                                                      // fontWeight: FontWeight.w500,
-                                                      decoration: TextDecoration.lineThrough,
-
-                                                      fontSize: 22.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                      fontSize: 18.sp,
                                                     ),
                                                   ),
                                                 ],
