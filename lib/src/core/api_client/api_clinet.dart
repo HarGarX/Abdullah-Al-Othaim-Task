@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -18,7 +20,22 @@ class ApiClient {
 
   ApiClient(this.client);
 
-  String readData(String name) => File('assets/data/$name').readAsStringSync();
+  //assets/data.json
+
+  Future<String> readData(String name) async {
+    try {
+      final NetworkInfo networkInfo = locator<NetworkInfo>();
+      await networkInfo.isConnected;
+      print('--- Parse json from: $name');
+      final data = await rootBundle.loadString(name);
+      final jsonResult = jsonDecode(data);
+      print('--- json Result: $jsonResult');
+      return data;
+    } catch (e, stk) {
+      print(e);
+      rethrow;
+    }
+  }
 
   /// Return the header without the stored JWT Token.
   Future<Map<String, String>> _getHeaders() async {
