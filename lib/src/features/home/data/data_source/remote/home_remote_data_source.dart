@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:abdullah_al_othaim_task/src/core/api_client/api_clinet.dart';
-import 'package:abdullah_al_othaim_task/src/core/errors/failures.dart';
+import 'package:abdullah_al_othaim_task/src/core/errors/exceptions.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
 
 abstract class HomeRemoteDataSource {
@@ -16,11 +18,21 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<FetchProductsResponseModel> fetchProducts() async {
     try {
-      final rawData = _apiClient.readData('data.json');
+      final rawData = await _apiClient.readData('assets/data.json');
       final data = FetchProductsResponseModel.fromJson(jsonDecode(rawData));
+
+      // if (data.data!.isNotEmpty) {
       return data;
+      // }
+      // throw const ServerException(errorMessage: 'server error');
+    } on PathNotFoundException {
+      rethrow;
+    } on TimeoutException {
+      rethrow;
+    } on SocketException {
+      rethrow;
     } catch (e) {
-      throw ServerFailure(errorMessage: e.toString());
+      throw ServerException(errorMessage: e.toString());
     }
   }
 }

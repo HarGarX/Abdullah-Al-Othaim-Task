@@ -1,19 +1,26 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as dev;
+import 'dart:io';
 
+import 'package:abdullah_al_othaim_task/src/core/constants/secure_storage_consts.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/exceptions.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/failures.dart';
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
+import 'package:abdullah_al_othaim_task/src/core/service_locater.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/local/home_local_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remote/home_remote_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/repository/home_repository.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   final HomeRemoteDataSource _remoteDataSource;
   final HomeLocalDataSource _localDataSource;
   final NetworkInfo _networkInfo;
+  DateTime timerToFetchDataFromServer = DateTime.now();
 
   HomeRepositoryImpl({
     required HomeRemoteDataSource remoteDataSource,
@@ -26,18 +33,33 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<Either<Failure, List<ProductEntity>>> fetchProducts() async {
     final bool isConnected = await _networkInfo.isConnected;
-    if (isConnected == true) {
+    final secureStorage = locator<FlutterSecureStorage>();
+    final String? notFirstFetch = await secureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH);
+    final bool isItNotFirstFetch = notFirstFetch == 'true' ? true : false;
+    if (isConnected == true && isItNotFirstFetch == false
+        // DateTime.now().difference(timerToFetchDataFromServer) >= Duration(seconds: 45)
+        ) {
+      print("its connected");
       try {
         final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
+        timerToFetchDataFromServer = DateTime.now();
         await _localDataSource.cacheData(data: rawData);
+        await secureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true');
         final data = rawData.data;
         final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
         return Right(productsList);
-      } catch (e, stk) {
-        return Left(ServerFailure(errorMessage: 'server error'));
-        throw UnimplementedError();
+      } on PathNotFoundException {
+        return const Left(ServerFailure(errorMessage: 'Local Data file not found'));
+      } on TimeoutException {
+        return const Left(TimeoutFailure(errorMessage: 'Time out waiting response from server. '));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(errorMessage: e.toString()));
+      } on SocketException {
+        return const Left(NoInternetFailure(errorMessage: 'No Internet Connectivity'));
       }
     } else {
+      print("its not connected");
+
       try {
         final rawData = await _localDataSource.fetchProducts();
         final data = rawData.data;
@@ -46,6 +68,34 @@ class HomeRepositoryImpl implements HomeRepository {
       } on CacheException {
         return const Left(CacheFailure(errorMessage: 'no data in cache'));
       }
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ProductEntity>>> updateLocalData() async {
+    final bool isConnected = await _networkInfo.isConnected;
+
+    if (isConnected == true) {
+      dev.log("its connected from update data");
+      try {
+        final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
+        timerToFetchDataFromServer = DateTime.now();
+        await _localDataSource.cacheData(data: rawData);
+        final data = rawData.data;
+        final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
+        return Right(productsList);
+      } on PathNotFoundException {
+        return const Left(ServerFailure(errorMessage: 'Local Data file not found'));
+      } on TimeoutException {
+        return const Left(TimeoutFailure(errorMessage: 'Time out waiting response from server. '));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(errorMessage: e.toString()));
+      } on SocketException {
+        return const Left(NoInternetFailure(errorMessage: 'No Internet Connectivity'));
+      }
+    } else {
+      dev.log("its not connected from update data");
+      return const Left(CacheFailure(errorMessage: 'error updating local data '));
     }
   }
 }

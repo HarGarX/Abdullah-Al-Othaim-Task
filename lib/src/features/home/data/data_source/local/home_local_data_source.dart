@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:abdullah_al_othaim_task/src/core/constants/secure_storage_consts.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/exceptions.dart';
@@ -22,6 +24,12 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
         return Future.value(FetchProductsResponseModel.fromJson(jsonDecode(jsonString)));
       }
       throw const CacheException(errorMessage: 'no data in cache');
+    } on PathNotFoundException {
+      rethrow;
+    } on TimeoutException {
+      rethrow;
+    } on SocketException {
+      rethrow;
     } catch (e) {
       throw CacheException(errorMessage: e.toString());
     }
@@ -31,6 +39,12 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   Future<void> cacheData({required FetchProductsResponseModel data}) async {
     try {
       return await flutterSecureStorage.write(key: SecureStorageConstants.LOCAL_DATA, value: jsonEncode(data.toJson()));
+    } on PathNotFoundException {
+      rethrow;
+    } on TimeoutException {
+      rethrow;
+    } on SocketException {
+      rethrow;
     } catch (e) {
       throw CacheException(errorMessage: e.toString());
     }
