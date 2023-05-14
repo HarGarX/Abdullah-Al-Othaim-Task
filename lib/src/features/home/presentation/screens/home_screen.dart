@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(15.0),
       margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
       behavior: SnackBarBehavior.floating,
-      width: 20.w,
+      // width: 20.w,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       duration: const Duration(seconds: 1),
     ));
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             statusBarColor: Colors.transparent,
           ),
           automaticallyImplyLeading: false,
-          toolbarHeight: Device.orientation == Orientation.portrait ? 17.h : 17.w,
+          toolbarHeight: Device.orientation == Orientation.portrait ? 17.h : 18.w,
           backgroundColor: AppColor.mainAppColorWhite,
           titleSpacing: 0.0,
           title: GestureDetector(
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   AssetConst.logo,
                   alignment: Alignment.topCenter,
                   height: Device.orientation == Orientation.portrait ? 16.h : 16.w,
-                  width: Device.orientation == Orientation.portrait ? 20.w : 20.h,
+                  width: Device.orientation == Orientation.portrait ? 25.w : 25.h,
                   fit: BoxFit.cover,
                 ),
               ],
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(15.0),
                   margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
                   behavior: SnackBarBehavior.floating,
-                  width: 20.w,
+                  // width: 20.w,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                   duration: const Duration(seconds: 4),
                 ));
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(15.0),
                       margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
                       behavior: SnackBarBehavior.floating,
-                      width: 20.w,
+                      // width: 20.w,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                       duration: const Duration(seconds: 4),
                     ));
@@ -195,8 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             children: [
                                               Image.asset(
                                                 i.imageUrl!,
-                                                height: 20.h,
-                                                width: 50.w,
+                                                height: Device.orientation == Orientation.portrait ? 20.h : 20.w,
+                                                width: Device.orientation == Orientation.portrait ? 50.w : 50.w,
                                                 fit: BoxFit.fill,
                                               ),
                                               const SizedBox(
@@ -291,8 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     if (currentActivePage >= 0) ...[
                       Positioned(
-                        right: 3.w,
-                        top: 15.h,
+                        right: Device.orientation == Orientation.portrait ? 4.w : 4.w,
+                        top: Device.orientation == Orientation.portrait ? 15.h : 13.w,
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.7),
@@ -314,8 +314,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                     if (currentActivePage > 0) ...[
                       Positioned(
-                        left: 3.w,
-                        top: 15.h,
+                        left: Device.orientation == Orientation.portrait ? 4.w : 4.w,
+                        top: Device.orientation == Orientation.portrait ? 15.h : 13.w,
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.7),
@@ -349,21 +349,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 50.w,
                     decoration: const BoxDecoration(color: Colors.white),
                     child: SkeletonItem(
-                      child: Column(
-                        children: [
-                          SkeletonParagraph(
-                            style: SkeletonParagraphStyle(
-                              lines: 1,
-                              padding: const EdgeInsets.all(0.0),
-                              lineStyle: SkeletonLineStyle(
-                                randomLength: true,
-                                height: 30.h,
-                                borderRadius: BorderRadius.circular(20),
-                                minLength: MediaQuery.of(context).size.width,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SkeletonParagraph(
+                              style: SkeletonParagraphStyle(
+                                lines: 1,
+                                padding: const EdgeInsets.all(0.0),
+                                lineStyle: SkeletonLineStyle(
+                                  randomLength: true,
+                                  height: Device.orientation == Orientation.portrait ? 30.h : 30.w,
+                                  borderRadius: BorderRadius.circular(20),
+                                  minLength: MediaQuery.of(context).size.width,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

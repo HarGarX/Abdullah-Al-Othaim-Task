@@ -11,13 +11,19 @@ class RouteGenerator {
 
     switch (settings.name) {
       case RouteConsts.homeRoute:
-        return PageTransition(child: const HomeScreen(), type: PageTransitionType.fade);
+        return PageTransition(
+          child: const HomeScreen(),
+          type: PageTransitionType.fade,
+          alignment: Alignment.bottomCenter,
+          duration: const Duration(milliseconds: 300),
+        );
       case RouteConsts.productRoute:
         final ProductEntity productEntity = settings.arguments as ProductEntity;
         return PageTransition(
           child: ProductsDetailScreen(productEntity: productEntity),
           type: PageTransitionType.fade,
-          duration: const Duration(milliseconds: 500),
+          alignment: Alignment.bottomCenter,
+          duration: const Duration(milliseconds: 300),
         );
       default:
         return errorRoute();

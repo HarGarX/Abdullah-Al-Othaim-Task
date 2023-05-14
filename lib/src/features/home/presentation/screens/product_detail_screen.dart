@@ -1,4 +1,5 @@
 import 'package:abdullah_al_othaim_task/src/core/constants/app_color.dart';
+import 'package:abdullah_al_othaim_task/src/core/routes/route_consts.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -106,16 +107,19 @@ class _ProductsDetailScreenState extends State<ProductsDetailScreen> {
                   const SizedBox(
                     height: 5.0,
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '''Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.''',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Metropolis',
-                        height: 1.2,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 23.sp,
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '''Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.''',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'Metropolis',
+                          height: 1.2,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 23.sp,
+                        ),
                       ),
                     ),
                   ),
@@ -133,7 +137,9 @@ class _ProductsDetailScreenState extends State<ProductsDetailScreen> {
                 padding: const EdgeInsets.all(12.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(RouteConsts.homeRoute, (Route<dynamic> route) => false);
+                    // Navigator.pop(context);
                   },
                   child: const Icon(
                     Icons.arrow_back_ios_new_sharp,
