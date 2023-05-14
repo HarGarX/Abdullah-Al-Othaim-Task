@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Timer timer;
   final CarouselController carouselController = CarouselController();
   int currentActivePage = 0;
-  List<int> favProductsList = [];
+  List<String> favProductsList = [];
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (isConnected == false) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                        'Info : getting data from sever',
+                        'Info : getting data from cache ',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -262,15 +262,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  if (favProductsList.contains(i.sku!)) {
-                                                    favProductsList.remove(i.sku);
+                                                  if (favProductsList.contains("${i.desc}-${i.sku!.toString()!}")) {
+                                                    favProductsList.remove("${i.desc}-${i.sku!.toString()!}");
                                                   } else {
-                                                    favProductsList.add(i.sku!);
+                                                    favProductsList.add("${i.desc}-${i.sku!.toString()!}");
                                                   }
                                                 });
                                               },
                                               child: Icon(
-                                                favProductsList.contains(i.sku!)
+                                                favProductsList.contains("${i.desc}-${i.sku!.toString()!}")
                                                     ? Icons.favorite
                                                     : Icons.favorite_border,
                                                 color: AppColor.mainAppColorRed,
