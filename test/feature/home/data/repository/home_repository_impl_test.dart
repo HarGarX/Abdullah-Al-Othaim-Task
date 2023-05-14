@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:abdullah_al_othaim_task/src/core/constants/secure_storage_consts.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/exceptions.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/failures.dart';
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
@@ -8,7 +9,7 @@ import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remot
 import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/repository/home_repository_impl.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/domain/entites/product_entity.dart';
-import 'package:dartz/dartz.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -16,74 +17,65 @@ import 'package:mockito/mockito.dart';
 import '../../../../fixtures/fixture_reader.dart';
 import 'home_repository_impl_test.mocks.dart';
 
-@GenerateMocks([HomeRemoteDataSource, HomeLocalDataSource, NetworkInfo])
+@GenerateMocks([HomeRemoteDataSource, HomeLocalDataSource, NetworkInfo, FlutterSecureStorage])
 void main() {
-  late final HomeRepositoryImpl repository;
-  late final MockHomeRemoteDataSource mockRemoteDataSource;
-  late final MockHomeLocalDataSource mockLocalDataSource;
-  late final MockNetworkInfo mockNetworkInfo;
-  mockRemoteDataSource = MockHomeRemoteDataSource();
-  mockLocalDataSource = MockHomeLocalDataSource();
+  late HomeRepositoryImpl repository;
+  late MockHomeRemoteDataSource mockHomeRemoteDataSource;
+  late MockHomeLocalDataSource mockHomeLocalDataSource;
+  late MockNetworkInfo mockNetworkInfo;
+  late MockFlutterSecureStorage mockFlutterSecureStorage;
+
+  final tFetchProductsResponseModel = FetchProductsResponseModel.fromJson(jsonDecode(fixture('data.json')));
+  final List<ProductEntity> tProductsList =
+      productsEntityFromJson(jsonEncode(tFetchProductsResponseModel.toJson()['data']));
+  mockHomeRemoteDataSource = MockHomeRemoteDataSource();
+  mockHomeLocalDataSource = MockHomeLocalDataSource();
   mockNetworkInfo = MockNetworkInfo();
+  mockFlutterSecureStorage = MockFlutterSecureStorage();
   repository = HomeRepositoryImpl(
-    remoteDataSource: mockRemoteDataSource,
-    localDataSource: mockLocalDataSource,
+    remoteDataSource: mockHomeRemoteDataSource,
+    localDataSource: mockHomeLocalDataSource,
     networkInfo: mockNetworkInfo,
+    flutterSecureStorage: mockFlutterSecureStorage,
   );
-  // mockRemoteDataSource = MockHomeRemoteDataSource();
-  // mockLocalDataSource = MockHomeLocalDataSource();
-  // mockNetworkInfo = MockNetworkInfo();
-  // repository = MockHomeRepositoryImpl(
-  //     // remoteDataSource: mockRemoteDataSource,
-  //     // localDataSource: mockLocalDataSource,
-  //     // networkInfo: mockNetworkInfo,
-  //     );
-  setUpAll(() {});
-  group('fetchProducts', () {
-    // DATA FOR THE MOCKS AND ASSERTIONS
-    // We'll use these three variables throughout all the tests
 
-    final tFetchProductsResponseModel = FetchProductsResponseModel.fromJson(jsonDecode(fixture('data.json')));
-    final tProductsList = productsEntityFromJson(jsonEncode(tFetchProductsResponseModel.toJson()['data']));
-
-    test('should check if the device is online', () async {
-      //arrange
-      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      //act
-      await repository.fetchProducts();
-      //assert
-      verify(mockNetworkInfo.isConnected);
-    });
+  test('should check if the device is online', () async {
+    //arrange
+    when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+    when(mockHomeRemoteDataSource.fetchProducts()).thenAnswer((_) async => Future.value(tFetchProductsResponseModel));
+    when(mockFlutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH))
+        .thenAnswer((realInvocation) async => 'false');
+    when(mockFlutterSecureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true'))
+        .thenAnswer((realInvocation) async => null);
+    //act
+    await repository.fetchProducts();
+    //assert
+    verify(mockNetworkInfo.isConnected);
   });
 
   group('device is online', () {
-    // This setUp applies only to the 'device is online' group
-    setUpAll(() {
-      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-    });
-    // tearDownAll(() {
-    //   resetMockitoState();
-    // });
-
     test(
       'should return remote data when the call to remote data source is successful',
       () async {
-        final FetchProductsResponseModel tFetchProductsResponseModel =
-            FetchProductsResponseModel.fromJson(jsonDecode(fixture('data.json')));
-        final List<ProductEntity> tProductsList =
-            productsEntityFromJson(jsonEncode(tFetchProductsResponseModel.toJson()['data']));
         //arrange
-        when(mockRemoteDataSource.fetchProducts()).thenAnswer((_) async => tFetchProductsResponseModel);
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+        when(mockHomeRemoteDataSource.fetchProducts())
+            .thenAnswer((_) async => Future.value(tFetchProductsResponseModel));
+        when(mockHomeLocalDataSource.cacheData(data: tFetchProductsResponseModel)).thenAnswer((_) async => {});
+        when(mockFlutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH))
+            .thenAnswer((_) async => 'false');
+        when(mockFlutterSecureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true'))
+            .thenAnswer((_) async => null);
         //act
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
         );
         //assert
-        verify(mockRemoteDataSource.fetchProducts());
+        verify(mockHomeRemoteDataSource.fetchProducts());
         expect(result, equals(tProductsList));
-        reset(mockRemoteDataSource);
-        reset(mockLocalDataSource);
+        reset(mockHomeRemoteDataSource);
+        reset(mockHomeLocalDataSource);
       },
     );
 
@@ -95,17 +87,17 @@ void main() {
         final List<ProductEntity> tProductsList =
             productsEntityFromJson(jsonEncode(tFetchProductsResponseModel.toJson()['data']));
         // arrange
-        when(mockRemoteDataSource.fetchProducts()).thenAnswer((_) async => tFetchProductsResponseModel);
+        when(mockHomeRemoteDataSource.fetchProducts()).thenAnswer((_) async => tFetchProductsResponseModel);
         // act
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
         );
         // assert
-        verify(mockRemoteDataSource.fetchProducts());
-        verify(mockLocalDataSource.cacheData(data: tFetchProductsResponseModel));
-        reset(mockRemoteDataSource);
-        reset(mockLocalDataSource);
+        verify(mockHomeRemoteDataSource.fetchProducts());
+        verify(mockHomeLocalDataSource.cacheData(data: tFetchProductsResponseModel));
+        reset(mockHomeRemoteDataSource);
+        reset(mockHomeLocalDataSource);
       },
     );
 
@@ -113,48 +105,46 @@ void main() {
       'should return server failure when the call to remote data source is unsuccessful',
       () async {
         // arrange
-        when(mockRemoteDataSource.fetchProducts()).thenThrow(const Left(ServerFailure(errorMessage: 'server error')));
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+        when(mockFlutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH))
+            .thenAnswer((_) async => 'false');
+        when(mockHomeRemoteDataSource.fetchProducts())
+            .thenAnswer((_) async => throw const ServerException(errorMessage: 'server error'));
         // act
-        print("its shold show");
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
         );
         // assert
-        verify(mockRemoteDataSource.fetchProducts());
-        verifyZeroInteractions(mockLocalDataSource);
-        expect(result, equals(const ServerFailure(errorMessage: 'server error')));
-        reset(mockRemoteDataSource);
-        reset(mockLocalDataSource);
+        verify(mockHomeRemoteDataSource.fetchProducts());
+        verifyZeroInteractions(mockHomeLocalDataSource);
+        expect(result, ServerFailure(errorMessage: 'server error'));
+        reset(mockHomeRemoteDataSource);
+        reset(mockHomeLocalDataSource);
       },
     );
   });
 
   group('device is offline', () {
-    setUp(() {
-      when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
-    });
-
     test(
       'should return last locally cached data when the cached data is present',
       () async {
-        final FetchProductsResponseModel tFetchProductsResponseModel =
-            FetchProductsResponseModel.fromJson(jsonDecode(fixture('data.json')));
-        final List<ProductEntity> tProductsList =
-            productsEntityFromJson(jsonEncode(tFetchProductsResponseModel.toJson()['data']));
         // arrange
-        when(mockLocalDataSource.fetchProducts()).thenAnswer((_) async => tFetchProductsResponseModel);
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+        when(mockFlutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH))
+            .thenAnswer((realInvocation) async => 'true');
+        when(mockHomeLocalDataSource.fetchProducts()).thenAnswer((_) async => tFetchProductsResponseModel);
         // act
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
         );
         // assert
-        verifyZeroInteractions(mockRemoteDataSource);
-        verify(mockLocalDataSource.fetchProducts());
+        verifyZeroInteractions(mockHomeRemoteDataSource);
+        verify(mockHomeLocalDataSource.fetchProducts());
         expect(result, equals(tProductsList));
-        reset(mockRemoteDataSource);
-        reset(mockLocalDataSource);
+        reset(mockHomeRemoteDataSource);
+        reset(mockHomeLocalDataSource);
       },
     );
 
@@ -162,18 +152,22 @@ void main() {
       'should return CacheFailure when there is no cached data present',
       () async {
         // arrange
-        when(mockLocalDataSource.fetchProducts()).thenThrow(const CacheException(errorMessage: 'no data in cache'));
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+        when(mockFlutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH))
+            .thenAnswer((realInvocation) async => 'true');
+        when(mockHomeLocalDataSource.fetchProducts())
+            .thenAnswer((_) async => throw const CacheException(errorMessage: 'no data in cache'));
         // act
         final result = (await repository.fetchProducts()).fold(
           (failure) => failure,
           (response) => response,
         );
         // assert
-        verifyZeroInteractions(mockRemoteDataSource);
-        verify(mockLocalDataSource.fetchProducts());
-        expect(result, equals(const CacheFailure(errorMessage: 'no data in cache')));
-        reset(mockRemoteDataSource);
-        reset(mockLocalDataSource);
+        verifyZeroInteractions(mockHomeRemoteDataSource);
+        verify(mockHomeLocalDataSource.fetchProducts());
+        expect(result, const CacheFailure(errorMessage: 'no data in cache'));
+        reset(mockHomeRemoteDataSource);
+        reset(mockHomeLocalDataSource);
       },
     );
   });

@@ -51,6 +51,7 @@ Future<void> setUpLocator() async {
         remoteDataSource: locator(),
         localDataSource: locator(),
         networkInfo: locator(),
+        flutterSecureStorage: locator(),
       ));
 
   ///

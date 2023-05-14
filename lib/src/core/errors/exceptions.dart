@@ -26,3 +26,7 @@ class ServerException extends AppException {
 class CacheException extends AppException {
   const CacheException({required super.errorMessage});
 }
+
+class EmptyCacheException extends AppException {
+  const EmptyCacheException({required super.errorMessage});
+}

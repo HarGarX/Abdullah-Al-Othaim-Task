@@ -19,11 +19,12 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   Future<FetchProductsResponseModel> fetchProducts() async {
     try {
       final jsonString = await flutterSecureStorage.read(key: SecureStorageConstants.LOCAL_DATA);
-      if (jsonString != null) {
-        // Future which is immediately completed
-        return Future.value(FetchProductsResponseModel.fromJson(jsonDecode(jsonString)));
-      }
-      throw const CacheException(errorMessage: 'no data in cache');
+      // if (jsonString != null) {
+      // Future which is immediately completed
+      return Future.value(FetchProductsResponseModel.fromJson(jsonDecode(jsonString!)));
+      // } else {
+      throw const EmptyCacheException(errorMessage: 'no data in cache');
+      // }
     } on PathNotFoundException {
       rethrow;
     } on TimeoutException {

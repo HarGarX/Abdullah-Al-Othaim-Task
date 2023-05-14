@@ -75,8 +75,6 @@ void main() {
           final result = product;
           expect(result.salePrice, isA<num>());
           expect(result.regularPrice, isA<num>());
-
-          // expect(tProductModelResponse, isA<List<ProductEntity>>());
         },
       );
     }

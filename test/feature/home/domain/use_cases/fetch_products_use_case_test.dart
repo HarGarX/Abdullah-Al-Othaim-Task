@@ -9,17 +9,13 @@ import 'package:mockito/mockito.dart';
 
 import 'fetch_products_use_case_test.mocks.dart';
 
-// class MockHomeRepository extends Mock implements HomeRepository {}
-
 @GenerateMocks([HomeRepository])
 void main() {
   FetchProductsUseCase useCase;
   MockHomeRepository mockHomeRepository;
 
-  // setUp(() {
   mockHomeRepository = MockHomeRepository();
   useCase = FetchProductsUseCase(homeRepository: mockHomeRepository);
-  // });
   final tParams = NoParams();
   final tProductsList = [
     ProductEntity(sku: 1, desc: 'description', regularPrice: 10.0, salePrice: 8.0, imageUrl: 'image/url'),

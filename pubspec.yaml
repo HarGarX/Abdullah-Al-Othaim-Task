@@ -43,8 +43,7 @@ dependencies:
   #Route Page Transation [Pkgs]
   page_transition: ^2.0.9
   #Storage [Pkgs]
-  shared_preferences: ^2.0.15
-  flutter_secure_storage: ^6.0.0
+  flutter_secure_storage: ^8.0.0
   #HTTP [pkgs]
   http: ^0.13.6
   #StateManagement [Pkgs]

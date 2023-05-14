@@ -25,12 +25,9 @@ void main() {
 
         when(mockInternetConnectionChecker.hasConnection).thenAnswer((_) => tHasConnectionFuture);
         // act
-        // NOTICE: We're NOT awaiting the result
         final result = networkInfo.isConnected;
         // assert
         verify(mockInternetConnectionChecker.hasConnection);
-        // Utilizing Dart's default referential equality.
-        // Only references to the same object are equal.
         expect(result, tHasConnectionFuture);
       },
     );

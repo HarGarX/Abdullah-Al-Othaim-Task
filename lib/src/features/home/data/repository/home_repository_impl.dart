@@ -7,7 +7,6 @@ import 'package:abdullah_al_othaim_task/src/core/constants/secure_storage_consts
 import 'package:abdullah_al_othaim_task/src/core/errors/exceptions.dart';
 import 'package:abdullah_al_othaim_task/src/core/errors/failures.dart';
 import 'package:abdullah_al_othaim_task/src/core/platform/network_info.dart';
-import 'package:abdullah_al_othaim_task/src/core/service_locater.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/local/home_local_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/data_source/remote/home_remote_data_source.dart';
 import 'package:abdullah_al_othaim_task/src/features/home/data/models/fetch_products_response_model.dart';
@@ -20,27 +19,29 @@ class HomeRepositoryImpl implements HomeRepository {
   final HomeRemoteDataSource _remoteDataSource;
   final HomeLocalDataSource _localDataSource;
   final NetworkInfo _networkInfo;
+  final FlutterSecureStorage _flutterSecureStorage;
 
   HomeRepositoryImpl({
     required HomeRemoteDataSource remoteDataSource,
     required HomeLocalDataSource localDataSource,
     required NetworkInfo networkInfo,
+    required FlutterSecureStorage flutterSecureStorage,
   })  : _remoteDataSource = remoteDataSource,
         _localDataSource = localDataSource,
-        _networkInfo = networkInfo;
+        _networkInfo = networkInfo,
+        _flutterSecureStorage = flutterSecureStorage;
 
   @override
   Future<Either<Failure, List<ProductEntity>>> fetchProducts() async {
     final bool isConnected = await _networkInfo.isConnected;
-    final secureStorage = locator<FlutterSecureStorage>();
-    final String? notFirstFetch = await secureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH);
-    final bool isItNotFirstFetch = notFirstFetch == 'true' ? true : false;
+    final String? notFirstFetch = await _flutterSecureStorage.read(key: SecureStorageConstants.NOT_FIRST_FETCH);
+    final bool isItNotFirstFetch = notFirstFetch != null && notFirstFetch == 'true' ? true : false;
     if (isConnected == true && isItNotFirstFetch == false) {
       dev.log("its connected");
       try {
         final FetchProductsResponseModel rawData = await _remoteDataSource.fetchProducts();
         await _localDataSource.cacheData(data: rawData);
-        await secureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true');
+        await _flutterSecureStorage.write(key: SecureStorageConstants.NOT_FIRST_FETCH, value: 'true');
         final data = rawData.data;
         final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
         return Right(productsList);
@@ -61,6 +62,14 @@ class HomeRepositoryImpl implements HomeRepository {
         final data = rawData.data;
         final List<ProductEntity> productsList = productsEntityFromJson(jsonEncode(data));
         return Right(productsList);
+      } on PathNotFoundException {
+        return const Left(ServerFailure(errorMessage: 'Local Data file not found'));
+      } on TimeoutException {
+        return const Left(TimeoutFailure(errorMessage: 'Time out waiting response from server. '));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(errorMessage: e.toString()));
+      } on SocketException {
+        return const Left(NoInternetFailure(errorMessage: 'No Internet Connectivity'));
       } on CacheException {
         return const Left(CacheFailure(errorMessage: 'no data in cache'));
       }
